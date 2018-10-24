@@ -144,15 +144,15 @@ public class FileTypeUtil {
                     break;
                 }
             }
-            log.info("文件头:" + fileCode + "-----文件类型:" + res);
-            fis.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                fis.close();
+                if (fis != null) {
+                    fis.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

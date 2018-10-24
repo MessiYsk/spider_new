@@ -7,6 +7,9 @@
  */
 package com.yusk.spider;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * TODO
  *
@@ -18,17 +21,23 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String url1 = "http://www.aoya-hk.com/uploadfile/2016/1030/20161030121830120.jpg";
-        String url2 = "//////////www.aoya-hk.com/uploadfile/2016/1030/20161030121830120.jpg";
-        String url3 = "//www.aoya-hk.com/uploadfile/2016/1030/20161030121830120.jpg";
-        String url4 = "/www.aoya-hk.com/uploadfile/2016/1030/20161030121830120.jpg";
-        String url5 = "www.aoya-hk.com/uploadfile/2016/1030/20161030121830120.jpg";
+        String urlPath = "http://www.baidu.com/pic";
 
-        System.out.println(formateSrcUrl(url1));
-        System.out.println(formateSrcUrl(url2));
-        System.out.println(formateSrcUrl(url3));
-        System.out.println(formateSrcUrl(url4));
-        System.out.println(formateSrcUrl(url5));
+        URL url = null;
+        try {
+            url = new URL(urlPath);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        // 获取主机名
+        String host = url.getHost();
+
+        String substring = host.substring(host.indexOf(".") + 1);
+
+        System.out.println(substring);
+
+        System.out.println(host);
 
     }
 

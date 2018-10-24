@@ -26,8 +26,7 @@ public class ZipUtils {
     public static void getZip(OutputStream outputStream, List<File> listFile) throws Exception {
 
         FileInputStream fis = null;
-        ZipOutputStream outzip = null;
-        outzip = new ZipOutputStream(outputStream);
+        ZipOutputStream outzip = new ZipOutputStream(outputStream);
         int size = listFile.size();
 
         for (int j = 0; j < size; j++) {
@@ -43,8 +42,8 @@ public class ZipUtils {
                 outzip.write(len);
                 outzip.flush();
             }
+            fis.close();
         }
         outzip.close();
-        fis.close();
     }
 }

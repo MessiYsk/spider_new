@@ -69,6 +69,14 @@ public class PictureCrawlingController {
         return picturePath;
     }
 
+    @GetMapping("test")
+    @ResponseBody
+    public String test(String urls) {
+
+        String picturePath = pictureCrawlingManage.getPictures(urls, true);
+        return picturePath;
+    }
+
     @GetMapping
     @ResponseBody
     public void downloadPic(String pic) {

@@ -7,6 +7,7 @@
  */
 package com.yusk.spider.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 
@@ -22,10 +23,16 @@ public class DomainImgConfig {
 
     @TableId
     private Integer id;
-    
+
     private String domain;
 
-    private String imgAttr;
+    @TableField(value = "img_attr1")
+    private String imgAttr1;
+
+    @TableField(value = "img_attr2")
+    private String imgAttr2;
+
+    private String nodeName;
 
     public Integer getId() {
         return id;
@@ -43,11 +50,27 @@ public class DomainImgConfig {
         this.domain = domain;
     }
 
-    public String getImgAttr() {
-        return imgAttr;
+    public String getImgAttr1() {
+        return imgAttr1;
     }
 
-    public void setImgAttr(String imgAttr) {
-        this.imgAttr = imgAttr;
+    public void setImgAttr1(String imgAttr1) {
+        this.imgAttr1 = imgAttr1;
+    }
+
+    public String getImgAttr2() {
+        return imgAttr2;
+    }
+
+    public void setImgAttr2(String imgAttr2) {
+        this.imgAttr2 = imgAttr2;
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 }

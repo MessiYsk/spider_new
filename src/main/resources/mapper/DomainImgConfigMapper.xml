@@ -6,7 +6,9 @@
     <resultMap type="com.yusk.spider.entity.DomainImgConfig" id="domainImgConfigMap">
         <result property="id" column="id"/>
         <result property="domain" column="domain"/>
-        <result property="imgAttr" column="img_attr"/>
+        <result property="imgAttr1" column="img_attr1"/>
+        <result property="imgAttr2" column="img_attr2"/>
+        <result property="nodeName" column="node_name"/>
     </resultMap>
 
 </mapper>

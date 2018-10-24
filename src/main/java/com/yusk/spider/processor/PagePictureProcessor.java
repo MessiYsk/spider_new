@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -63,11 +64,47 @@ public class PagePictureProcessor implements PageProcessor {
 
         String urlPath = page.getUrl().get();
 
-        DomainImgConfig domainImgConfig = new DomainImgConfig();
-        domainImgConfig.setDomain("test");
-        domainImgConfigMapper.selectOne(domainImgConfig);
+        URL url = null;
+        try {
+            url = new URL(urlPath);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
-        List<String> pics = page.getHtml().$("img").all();
+        // 获取主机名
+        String host = url.getHost();
+
+        DomainImgConfig domainImgConfig = new DomainImgConfig();
+        domainImgConfig.setDomain(host);
+        DomainImgConfig domainImg = domainImgConfigMapper.selectOne(domainImgConfig);
+
+        String node = "img";
+
+        String imgAttr1 = "src";
+
+        String imgAttr2 = "src";
+
+        if (domainImg != null) {
+            String nodeName = domainImg.getNodeName();
+            String attr1 = domainImg.getImgAttr1();
+            String attr2 = domainImg.getImgAttr2();
+
+            if (StringUtils.isNotBlank(nodeName)) {
+                node = nodeName;
+            }
+
+            if (StringUtils.isNotBlank(attr1)) {
+                imgAttr1 = attr1;
+            }
+
+            if (StringUtils.isNotBlank(attr2)) {
+                imgAttr2 = attr2;
+            }
+        } else {
+
+        }
+
+        List<String> pics = page.getHtml().$(node).all();
 
         ///遍历links集合中的链接，然后下载
         for (int i = 0; i < pics.size(); i++) {
@@ -75,11 +112,15 @@ public class PagePictureProcessor implements PageProcessor {
 
             Document doc = Jsoup.parse(link);
 
-            String src = doc.getElementsByTag("img").attr("src");
+            String src = doc.getElementsByTag(node).attr(imgAttr1);
+
+            if (StringUtils.isEmpty(src)) {
+                src = doc.getElementsByTag(node).attr(imgAttr2);
+            }
 
             try {
-                URL url = new URL(formateSrcUrl(src));
-                URLConnection con = url.openConnection();
+                URL urlPic = new URL(formateSrcUrl(src));
+                URLConnection con = urlPic.openConnection();
                 inStream = con.getInputStream();
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
                 byte[] buf = new byte[1024];
@@ -88,7 +129,6 @@ public class PagePictureProcessor implements PageProcessor {
                     outStream.write(buf, 0, len);
                 }
                 inStream.close();
-                outStream.close();
                 //图片下载地址
 
                 File file = new File(Constant.PATH + path + "//" + i + src.substring(src.lastIndexOf(".")));
@@ -100,6 +140,7 @@ public class PagePictureProcessor implements PageProcessor {
                 FileOutputStream op = new FileOutputStream(file);
                 op.write(outStream.toByteArray());
                 op.close();
+                outStream.close();
                 String fileType = FileTypeUtil.getFileType(file);
 
                 String name = file.getName();
@@ -127,11 +168,18 @@ public class PagePictureProcessor implements PageProcessor {
             List<File> listFile = Arrays.asList(files);
 
             File zipFile = new File(strZipName);
+            FileOutputStream fileOutputStream = null;
             try {
-                FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
+                fileOutputStream = new FileOutputStream(zipFile);
                 ZipUtils.getZip(fileOutputStream, listFile);
             } catch (Exception e) {
+                e.printStackTrace();
             } finally {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 CacheMap.setKey(path, new Date());
             }
         }
