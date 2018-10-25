@@ -1,0 +1,63 @@
+logging:
+  level:
+    tk.mybatis: DEBUG
+    com.github.wxiaoqi.security.kx.kuaixiu: DEBUG
+spring:
+  application:
+    name: spider
+  datasource:
+    name: test
+    url: jdbc:mysql://localhost:3306/spider_test?useUnicode=true&characterEncoding=UTF8
+    username: root
+    password: password
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+
+server:
+  port: 7777
+
+
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  typeAliasesPackage: com.yusk.spider.entity
+  global-config:
+    #????  0:"???ID??", 1:"????ID",2:"????ID (??????ID)", 3:"????ID UUID";
+    id-type: 3
+    #???? 0:"????",1:"? NULL ??"),2:"????"
+    field-strategy: 2
+    #???????
+    db-column-underline: true
+    #mp2.3+ ????? mp_
+    #table-prefix: mp_
+    #??mapper ????
+    #refresh-mapper: true
+    #??????????
+    #capital-mode: true
+    # Sequence?????????
+    key-generator: com.baomidou.mybatisplus.incrementer.OracleKeyGenerator
+    #?????????3????
+    logic-delete-value: 1
+    logic-not-delete-value: 0
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+    #???????????
+    #meta-object-handler: com.baomidou.springboot.MyMetaObjectHandler
+    configuration:
+      #???????(column?????&&??java???????)???????as???????SQL???as? select user_id as userId?
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+      #??JdbcTypeForNull, oracle???????
+      jdbc-type-for-null: 'null'
