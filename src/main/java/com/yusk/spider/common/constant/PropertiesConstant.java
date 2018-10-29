@@ -7,6 +7,9 @@
  */
 package com.yusk.spider.common.constant;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 /**
  * TODO
  *
@@ -14,7 +17,13 @@ package com.yusk.spider.common.constant;
  * @version V1.0
  * @since 2018-10-23 10:14
  */
-public class Constant {
+@Component
+public class PropertiesConstant {
 
-    public static String PATH = "D://test//";
+    @Value("${properties.path.file}")
+    public String PATH;
+    @Value("${properties.path.selenium}")
+    public String PATH_SELENIUM;
+    @Value("${properties.driver_name}")
+    public String DRIVER_NAME;
 }

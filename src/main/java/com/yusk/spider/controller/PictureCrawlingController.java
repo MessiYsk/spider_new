@@ -7,13 +7,14 @@
  */
 package com.yusk.spider.controller;
 
-import com.yusk.spider.common.constant.Constant;
+import com.yusk.spider.common.constant.PropertiesConstant;
 import com.yusk.spider.common.utils.ZipUtils;
 import com.yusk.spider.manager.PictureCrawlingManage;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -37,6 +39,8 @@ public class PictureCrawlingController {
 
     @Autowired
     private PictureCrawlingManage pictureCrawlingManage;
+    @Autowired
+    private PropertiesConstant propertiesConstant;
 
     @GetMapping("getallpicturessync")
     public void getAllPicturesSync(String urls, HttpServletResponse response) {
@@ -48,11 +52,11 @@ public class PictureCrawlingController {
         response.setContentType("application/zip");
         response.setHeader("Content-Disposition", "attachment; filename=" + strZipName);
         OutputStream out = null;
-        File fileDir = new File(Constant.PATH + picturePath);
+        File fileDir = new File(propertiesConstant.PATH + picturePath);
 
         File[] files = fileDir.listFiles();
 
-        List<File> listFile = Arrays.asList(files);
+        List<File> listFile = files != null ? Arrays.asList(files) : Collections.emptyList();
 
         try {
             ZipUtils.getZip(response.getOutputStream(), listFile);
@@ -61,7 +65,7 @@ public class PictureCrawlingController {
         }
     }
 
-    @GetMapping("getallpicturesasync")
+    @PostMapping("getallpicturesasync")
     @ResponseBody
     public String getAllPicturesAsync(String urls) {
 
@@ -69,16 +73,11 @@ public class PictureCrawlingController {
         return picturePath;
     }
 
-    @GetMapping("test")
+    @PostMapping("test")
     @ResponseBody
     public String test(String urls) {
 
         String picturePath = pictureCrawlingManage.getPictures(urls, true);
         return picturePath;
-    }
-
-    @GetMapping
-    @ResponseBody
-    public void downloadPic(String pic) {
     }
 }

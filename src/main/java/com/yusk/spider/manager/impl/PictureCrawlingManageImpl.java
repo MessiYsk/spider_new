@@ -7,6 +7,7 @@
  */
 package com.yusk.spider.manager.impl;
 
+import com.yusk.spider.common.constant.PropertiesConstant;
 import com.yusk.spider.manager.PictureCrawlingManage;
 import com.yusk.spider.mapper.DomainImgConfigMapper;
 import com.yusk.spider.processor.PagePictureProcessor;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.downloader.selenium.SeleniumDownloader;
 
 /**
  * 图片
@@ -33,6 +35,9 @@ public class PictureCrawlingManageImpl implements PictureCrawlingManage {
     @Autowired
     private DomainImgConfigMapper domainImgConfigMapper;
 
+    @Autowired
+    private PropertiesConstant propertiesConstant;
+
     @Override
     public String getPictures(String urls, Boolean sync) {
 
@@ -43,8 +48,12 @@ public class PictureCrawlingManageImpl implements PictureCrawlingManage {
 
         String[] strings = urls.split(";");
 
-        Spider.create(new PagePictureProcessor(format, sync, domainImgConfigMapper)).addUrl(strings).thread(1).run();
+        System.setProperty("selenuim_config", propertiesConstant.PATH_SELENIUM + "config.ini");
 
+        SeleniumDownloader seleniumDownloader = new SeleniumDownloader(
+            propertiesConstant.PATH_SELENIUM + propertiesConstant.DRIVER_NAME);
+        Spider.create(new PagePictureProcessor(format, sync, domainImgConfigMapper, propertiesConstant)).addUrl(strings)
+            .thread(1).setDownloader(seleniumDownloader).run();
         if (sync) {
             return format;
         } else {

@@ -8,7 +8,7 @@
 package com.yusk.spider.processor;
 
 import com.yusk.spider.common.cache.CacheMap;
-import com.yusk.spider.common.constant.Constant;
+import com.yusk.spider.common.constant.PropertiesConstant;
 import com.yusk.spider.common.utils.FileTypeUtil;
 import com.yusk.spider.common.utils.ZipUtils;
 import com.yusk.spider.entity.DomainImgConfig;
@@ -53,10 +53,14 @@ public class PagePictureProcessor implements PageProcessor {
 
     private DomainImgConfigMapper domainImgConfigMapper;
 
-    public PagePictureProcessor(String path, Boolean sync, DomainImgConfigMapper domainImgConfigMapper) {
+    private PropertiesConstant propertiesConstant;
+
+    public PagePictureProcessor(String path, Boolean sync, DomainImgConfigMapper domainImgConfigMapper,
+        PropertiesConstant propertiesConstant) {
         this.path = path;
         this.sync = sync;
         this.domainImgConfigMapper = domainImgConfigMapper;
+        this.propertiesConstant = propertiesConstant;
     }
 
     @Override
@@ -119,7 +123,11 @@ public class PagePictureProcessor implements PageProcessor {
             }
 
             try {
-                URL urlPic = new URL(formateSrcUrl(src));
+                String formateSrcUrl = formateSrcUrl(src);
+                if (StringUtils.isEmpty(formateSrcUrl)) {
+                    continue;
+                }
+                URL urlPic = new URL(formateSrcUrl);
                 URLConnection con = urlPic.openConnection();
                 inStream = con.getInputStream();
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -131,7 +139,7 @@ public class PagePictureProcessor implements PageProcessor {
                 inStream.close();
                 //图片下载地址
 
-                File file = new File(Constant.PATH + path + "//" + i + src.substring(src.lastIndexOf(".")));
+                File file = new File(propertiesConstant.PATH + path + "//" + i + src.substring(src.lastIndexOf(".")));
 
                 File parentFile = file.getParentFile();
                 if (!parentFile.exists()) {
@@ -146,7 +154,7 @@ public class PagePictureProcessor implements PageProcessor {
                 String name = file.getName();
 
                 if (!name.endsWith(fileType)) {
-                    file.renameTo(new File(Constant.PATH + path + "//" + i + "." + fileType));
+                    file.renameTo(new File(propertiesConstant.PATH + path + "//" + i + "." + fileType));
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -160,8 +168,8 @@ public class PagePictureProcessor implements PageProcessor {
         }
 
         if (!sync) {
-            String strZipName = Constant.PATH + path + ".zip";
-            File fileDir = new File(Constant.PATH + path);
+            String strZipName = propertiesConstant.PATH + path + ".zip";
+            File fileDir = new File(propertiesConstant.PATH + path);
 
             File[] files = fileDir.listFiles();
 
@@ -192,6 +200,9 @@ public class PagePictureProcessor implements PageProcessor {
 
     private String formateSrcUrl(String src) {
 
+        if (src.length() < 2) {
+            return null;
+        }
         String substring = src.substring(0, 2);
 
         if (substring.contains("//")) {
